@@ -1,0 +1,14 @@
+{
+    "users": [
+        {
+            "username": "player1",
+            "password": "mypassword",
+            "Balance": 210301
+        },
+        {
+            "username": "player2",
+            "password": "s",
+            "Balance": 51249678
+        }
+    ]
+}

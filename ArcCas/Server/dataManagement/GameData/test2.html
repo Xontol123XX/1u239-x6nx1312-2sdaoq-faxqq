@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaceman Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes cashout-notify {
+            0% { opacity: 0; transform: translateY(-10px); }
+            10% { opacity: 1; transform: translateY(0px); }
+            100% { opacity: 0; transform: translateY(-30px); }
+        }
+        .cashout-anim {
+            animation: cashout-notify 5s ease-in-out;
+        }
+        .disabled { opacity: 0.5; pointer-events: none; }
+        .input-transparent {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        .input-transparent::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .CashOutTxt {
+            font-size: 130%;
+        }
+        .Multiplyer {
+            text-align: center;
+            font-size: 800%;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+            color: white;
+            transition: color 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl w-full max-w-lg md:max-w-xl lg:max-w-2xl p-8 border border-white/20">
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center space-x-2 text-white">
+                <i data-lucide="coins" class="text-yellow-400"></i>
+                <span id="balance" class="font-bold text-2xl">Rp 50,000</span>
+            </div>
+        </div>
+        
+        <div id="multiplier" class="Multiplyer my-8">
+            1.00x
+        </div>
+        
+        <input id="bet-amount" type="number" min="100" placeholder="Masukkan taruhan" 
+            class="w-full p-3 mb-6 rounded-lg text-center input-transparent text-lg font-semibold focus:outline-none">
+
+        <div class="flex space-x-4">
+            <button id="start-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-full text-lg font-semibold">
+                Mulai
+            </button>
+            <button id="cashout-full-btn" class="hidden flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-full text-lg font-semibold">
+                Cash Out Penuh
+            </button>
+            <button id="cashout-half-btn" class="hidden flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-full text-lg font-semibold">
+                Cash Out 50%
+            </button>
+        </div>
+    </div>
+    
+    <div id="cashout-notification" class="hidden fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg text-lg font-semibold">
+        <span class="CashOutTxt">Cash Out</span>
+        <span id="cashout-amount" class="CashOutTxt">0</span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide-icons@0.263.0/dist/lucide.min.js"></script>
+    <script>
+        const multiplierEl = document.getElementById('multiplier');
+        const balanceEl = document.getElementById('balance');
+        const startBtn = document.getElementById('start-btn');
+        const cashoutFullBtn = document.getElementById('cashout-full-btn');
+        const cashoutHalfBtn = document.getElementById('cashout-half-btn');
+        const betAmountEl = document.getElementById('bet-amount');
+        const cashoutNotification = document.getElementById('cashout-notification');
+        const cashoutAmountEl = document.getElementById('cashout-amount');
+        const uri = "ws://localhost:6789";
+        let websocket;
+        
+        function connectToSpaceman() {
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                return;
+            }
+
+            console.log("Attempting to connect...");
+            websocket = new WebSocket(uri);
+
+            websocket.onopen = () => {
+                console.log("Connected to Spaceman WebSocket server");
+            };
+
+            websocket.onmessage = (event) => {
+                try {
+                    const gameState = JSON.parse(event.data);
+                    const gameStatus = gameState.GameStatus[0];
+                    
+                    // Perbarui tampilan status dan multiplier secara real-time tanpa refresh
+                    requestAnimationFrame(() => {
+                        multiplierEl.textContent = gameStatus.Multiply;
+                    });
+                } catch (error) {
+                    console.error("Error parsing message:", error);
+                }
+            };
+
+            websocket.onclose = () => {
+                console.log("Connection to server closed. Reconnecting in 2 seconds...");
+                setTimeout(connectToSpaceman, 2000);
+            };
+
+            websocket.onerror = (error) => {
+                console.error("WebSocket error:", error);
+                websocket.close();
+            };
+        }
+
+        connectToSpaceman();
+    </script>
+</body>
+</html>

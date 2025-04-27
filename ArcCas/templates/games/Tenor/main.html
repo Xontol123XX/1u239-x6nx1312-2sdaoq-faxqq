@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaceman Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            color: white;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .title-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes cashout-notify {
+            0% { opacity: 0; transform: translateY(-10px); }
+            10% { opacity: 1; transform: translateY(0px); }
+            90% { opacity: 1; transform: translateY(0px); }
+            100% { opacity: 0; transform: translateY(-30px); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); text-shadow: 0 0 5px rgba(255,255,255,0.2); }
+            50% { transform: scale(1.05); text-shadow: 0 0 20px rgba(255,255,255,0.5); }
+            100% { transform: scale(1); text-shadow: 0 0 5px rgba(255,255,255,0.2); }
+        }
+        
+        @keyframes rocket {
+            0% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-5px) rotate(5deg); }
+            50% { transform: translateY(-10px) rotate(0deg); }
+            75% { transform: translateY(-5px) rotate(-5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+        
+        @keyframes stars {
+            from { background-position: 0 0; }
+            to { background-position: -1000px 500px; }
+        }
+        
+        .cashout-anim {
+            animation: cashout-notify 3s ease-in-out;
+        }
+        
+        .disabled { opacity: 0.5; pointer-events: none; }
+        
+        .input-transparent {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .input-transparent:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+        
+        .input-transparent::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .CashOutTxt {
+            font-size: 130%;
+        }
+        
+        .Multiplyer {
+            text-align: center;
+            font-size: 800%;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+            color: white;
+            transition: all 0.2s ease;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid rgba(99, 102, 241, 0.5);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            opacity: 0;
+            animation: modalOpen 0.3s forwards;
+        }
+        
+        @keyframes modalOpen {
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .stars-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="10" cy="10" r="0.5" fill="white"/><circle cx="30" cy="20" r="0.8" fill="white"/><circle cx="50" cy="5" r="0.3" fill="white"/><circle cx="70" cy="15" r="0.6" fill="white"/><circle cx="90" cy="25" r="0.4" fill="white"/><circle cx="15" cy="40" r="0.7" fill="white"/><circle cx="35" cy="50" r="0.5" fill="white"/><circle cx="55" cy="45" r="0.3" fill="white"/><circle cx="75" cy="35" r="0.8" fill="white"/><circle cx="95" cy="55" r="0.4" fill="white"/><circle cx="5" cy="70" r="0.6" fill="white"/><circle cx="25" cy="80" r="0.3" fill="white"/><circle cx="45" cy="65" r="0.5" fill="white"/><circle cx="65" cy="75" r="0.7" fill="white"/><circle cx="85" cy="85" r="0.4" fill="white"/><circle cx="20" cy="95" r="0.5" fill="white"/><circle cx="40" cy="90" r="0.8" fill="white"/><circle cx="60" cy="95" r="0.3" fill="white"/><circle cx="80" cy="70" r="0.6" fill="white"/></svg>') repeat;
+            z-index: -1;
+            animation: stars 100s linear infinite;
+        }
+        
+        .rocket-icon {
+            animation: rocket 2s ease-in-out infinite;
+        }
+        
+        .game-container {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 
+                        inset 0 0 20px rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .game-container:hover {
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 
+                        inset 0 0 25px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(145deg, #6366f1 0%, #8b5cf6 100%);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0) 45%,
+                rgba(255, 255, 255, 0.3) 48%,
+                rgba(255, 255, 255, 0) 52%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -50%; top: -50%; }
+            100% { left: 150%; top: 150%; }
+        }
+        
+        .btn-success {
+            background: linear-gradient(145deg, #10b981 0%, #059669 100%);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(145deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(145deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .quick-bet {
+            transition: all 0.2s ease;
+        }
+        
+        .quick-bet:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .balance-pulse {
+            animation: balancePulse 0.5s;
+        }
+        
+        @keyframes balancePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .crash-animation {
+            animation: crashShake 0.5s;
+        }
+        
+        @keyframes crashShake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .multiplier-increase {
+            animation: multiplierIncrease 0.5s;
+        }
+        
+        @keyframes multiplierIncrease {
+            0% { transform: scale(1); color: white; }
+            50% { transform: scale(1.2); color: #10b981; }
+            100% { transform: scale(1); color: white; }
+        }
+        
+
+    </style>
+</head>
+<body>
+    <div class="stars-bg"></div>
+    
+    <div class="game-container rounded-2xl shadow-2xl w-full max-w-lg md:max-w-xl lg:max-w-2xl p-6 relative overflow-hidden">
+
+        
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center space-x-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400" id="bal1">
+                    <path d="M20 6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6Z"></path>
+                    <path d="M8 8h8v8"></path>
+                    <path d="m8 16 4-4 4 4"></path>
+                </svg>
+                <div id="bal1">
+                    <p class="text-sm text-gray-300">Balance</p>
+                    <span id="balance" class="font-bold text-2xl">Rp 50,000</span>
+                </div>
+
+
+                <button id="LoginBtn" class="btn-primary text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center space-x-1">
+
+                    </svg>
+                    <span>Login</span>
+                </button>
+            </div>
+
+            <!-- <div id="ProfilSection" class="flex items-center space-x-4 p-4">
+
+            
+                 Nama pengguna
+                <p id="Usn" class="text-white-800 text-base font-semibold">
+                    Calestiaa
+                </p>
+                 Foto profil default
+                <img src="https://icons.veryicon.com/png/o/miscellaneous/40px/avatar-17.png"
+                alt="Default Profile"
+                class="w-12 h-12 rounded-full object-cover" />
+            </div>  -->
+            
+            <button id="BackBtn" class="btn-primary text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center space-x-1">
+
+                </svg>
+                <span>Back</span>
+            </button>
+        </div>
+
+        <div class="relative my-8">
+            <div id="multiplier" class="Multiplyer" style="font-size:50px;">
+                Loading...
+            </div>
+            <div id="infoMul" class="Multiplyer" style="font-size:20px;">
+                Loading...
+            </div>
+            <div class="absolute top-0 right-0 text-sm text-gray-400">Current Multiplier</div>
+        </div>
+
+        <div class="mb-4">
+            <label for="bet-amount" class="block text-sm text-gray-300 mb-1">Bet Amount</label>
+            <input id="bet-amount" type="number" min="100" placeholder="Enter bet amount" 
+                class="w-full p-3 mb-2 rounded-lg input-transparent text-lg font-semibold focus:outline-none">
+
+        </div>
+
+        <div class="mb-4">
+            <label for="auto-cashout" class="block text-sm text-gray-300 mb-1">Auto Cashout</label>
+            <div class="flex items-center">
+                <input id="auto-cashout" type="number" min="1.1" step="0.1" placeholder="Set auto cashout (x)" 
+                    class="w-full p-3 rounded-lg input-transparent text-lg font-semibold focus:outline-none mr-2">
+                <button id="set-auto-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg text-sm font-semibold">
+                    Set
+                </button>
+            </div>
+        </div>
+
+        <div class="flex space-x-4 mb-4">
+            <button id="start-btn" class="btn-primary flex-1 text-white py-3 rounded-full text-lg font-semibold flex items-center justify-center space-x-2 background-color gray">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="rocket-icon" id="RocketAnim">
+                    <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path>
+                    <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path>
+                    <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path>
+                    <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path>
+                </svg>
+                <span id="StartGameTxt">Start Game</span>
+            </button>
+            <button id="cashout-full-btn" class="hidden btn-success flex-1 text-white py-3 rounded-full text-lg font-semibold">
+                Cash Out
+            </button>
+            <button id="cashout-half-btn" class="hidden btn-warning flex-1 text-white py-3 rounded-full text-lg font-semibold">
+                50% Cash Out
+            </button>
+        </div>
+
+        <div class="text-center text-xs text-gray-400 mt-6">
+            <p>Game by Spaceman | Play responsibly</p>
+        </div>
+    </div>
+
+    <div id="cashout-notification" class="hidden fixed top-5 right-5 bg-green-500/90 text-white px-6 py-3 rounded-lg shadow-lg text-lg font-semibold flex items-center space-x-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <div>
+            <div class="text-sm">You cashed out</div>
+            <span id="cashout-amount" class="font-bold">Rp 0</span>
+        </div>
+    </div>
+
+    <div id="auto-cashout-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold mb-2 title-font">Auto Cashout!</h3>
+            <p class="mb-3 text-gray-300">You cashed out at <span id="auto-cashout-multiplier" class="font-bold text-green-400">1.00x</span></p>
+            <div class="bg-gray-800/50 p-3 rounded-lg mb-4">
+                <p class="text-sm text-gray-400">Amount Won</p>
+                <p class="text-2xl font-bold" id="auto-cashout-amount">Rp 0</p>
+            </div>
+            <button id="close-auto-modal" class="btn-primary text-white px-6 py-2 rounded-full w-full">
+                Continue
+            </button>
+        </div>
+    </div>
+
+    <div id="crash-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold mb-2 title-font">Game Crashed!</h3>
+            <p class="mb-3 text-gray-300">The rocket crashed at <span id="crash-multiplier" class="font-bold text-red-400">1.00x</span></p>
+            <div class="bg-gray-800/50 p-3 rounded-lg mb-4">
+                <p class="text-sm text-gray-400">You lost</p>
+                <p class="text-2xl font-bold" id="crash-amount">Rp 0</p>
+            </div>
+            <button id="close-crash-modal" class="btn-primary text-white px-6 py-2 rounded-full w-full">
+                Play Again
+            </button>
+        </div>
+    </div>
+
+    <audio id="tick-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3" preload="auto"></audio>
+    <audio id="cashout-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
+    <audio id="crash-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-explosion-2759.mp3" preload="auto"></audio>
+
+    <script>
+        // DOM Elements
+        const multiplierEl = document.getElementById('multiplier');
+        const multiplierInfoEl = document.getElementById('infoMul');
+        const balanceEl = document.getElementById('balance');
+        const startBtn = document.getElementById('start-btn');
+        const cashoutFullBtn = document.getElementById('cashout-full-btn');
+        const cashoutHalfBtn = document.getElementById('cashout-half-btn');
+        const betAmountEl = document.getElementById('bet-amount');
+        const autoCashoutEl = document.getElementById('auto-cashout');
+        const setAutoBtn = document.getElementById('set-auto-btn');
+        const quickBetBtns = document.querySelectorAll('.quick-bet');
+        const cashoutNotification = document.getElementById('cashout-notification');
+        const cashoutAmountEl = document.getElementById('cashout-amount');
+        const autoCashoutModal = document.getElementById('auto-cashout-modal');
+        const autoCashoutMessage = document.getElementById('auto-cashout-message');
+        const autoCashoutMultiplier = document.getElementById('auto-cashout-multiplier');
+        const autoCashoutAmount = document.getElementById('auto-cashout-amount');
+        const closeAutoModal = document.getElementById('close-auto-modal');
+        const crashModal = document.getElementById('crash-modal');
+        const crashMultiplier = document.getElementById('crash-multiplier');
+        const crashAmount = document.getElementById('crash-amount');
+        const closeCrashModal = document.getElementById('close-crash-modal');
+        const btn = document.getElementById('start-btn');
+        const token = localStorage.getItem("jwt_token");
+        const rocket = document.getElementById("RocketAnim")
+        const LoginBtn = document.getElementById("LoginBtn");
+        let Isbet = false
+        
+        // Audio elements
+        const tickSound = document.getElementById('tick-sound');
+        const cashoutSound = document.getElementById('cashout-sound');
+        const crashSound = document.getElementById('crash-sound');
+        // Show error message
+        function showError(message) {
+            const error = document.createElement('div');
+            error.className = 'fixed top-5 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-2 rounded shadow-lg text-sm font-semibold';
+            error.textContent = message;
+            document.body.appendChild(error);
+            
+            setTimeout(() => {
+                error.style.opacity = '0';
+                error.style.transition = 'opacity 0.5s';
+                setTimeout(() => error.remove(), 500);
+            }, 2000);
+        }
+
+        // Gunakan URL relatif untuk WebSocket yang terhubung ke server yang sama
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/ws/game`;
+        const ws = new WebSocket(wsUrl);
+        document.getElementById('LoginBtn').addEventListener('click', function () {
+            window.location.href = '/account';
+        });
+        document.getElementById('BackBtn').addEventListener('click', function () {
+            function logout() {
+                localStorage.removeItem("jwt_token");
+                window.location.href = "/test/auto";  // redirect ke login
+            }
+
+        });
+        
+        startBtn.addEventListener('click', async () => {
+            if (Isbet == false){
+                btn.style.background = "linear-gradient(145deg, #ef4444 0%, #dc2626 100%)"; // Buat jadi warna merah
+                document.getElementById('StartGameTxt').textContent = "Cancel"
+                Isbet = true
+            }else{
+                btn.style.background = "linear-gradient(145deg, #6366f1 0%, #8b5cf6 100%)"; //Warna Default (Biru-Ungu)
+                Isbet = false
+                document.getElementById('StartGameTxt').textContent = "Start Game"
+            }
+            const token = localStorage.getItem("jwt_token");
+            // Ubah method ke POST supaya body dikirim
+            const response = await fetch('/play/tenor', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ bet: betAmountEl.value })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data.Status)
+                if (data.Status.includes("Success")){
+                    Isbet = true
+                    console.log(data)
+                    balanceEl.textContent = "Rp"+data.Balance.toLocaleString("id-ID");
+
+                    
+
+                    
+                    
+
+
+                    
+                }else{
+                    showError(data.Msg)
+                }
+                
+
+            })
+            
+            });
+
+        ws.onmessage = function(event) {
+            console.log(event.data)
+            multiplierEl.style.fontSize = "500%"
+            if (event.data.includes("x")){
+                Isbet = false
+                btn.classList.add('btn-primary');
+
+                // Kembalikan background ke semula
+                btn.style.background = "linear-gradient(145deg, #6366f1 0%, #8b5cf6 100%)"; //warna default(Biru-Ungu)
+                document.getElementById('StartGameTxt').textContent = "Start Game";
+                document.getElementById("RocketAnim").style.display = "none";
+                multiplierEl.classList.add('crash-animation');
+                multiplierEl.style.color = '#ef4444';
+                multiplierEl.innerText = event.data;
+                multiplierInfoEl.innerText = ""
+                btn.style.background = "gray"; // warna abu-abu polos
+                btn.style.cursor = "not-allowed"; // kursor tanda larangan
+                btn.style.opacity = "0.6"; // lebih transparan dikit
+                btn.disabled = true; // benar-benar disable tombol
+
+            }
+            else if (event.data.includes("Waiting")){
+                console.log(event.data)
+                x = event.data
+                multiplierEl.classList.remove('crash-animation');
+                multiplierEl.style.color = 'white';
+                multiplierEl.textContent = '1.00x';
+                multiplierEl.innerText = event.data.split(" ")[0];
+                console.log(x.split(" ")[1])
+                multiplierInfoEl.innerText = x.split(" ")[1]
+                document.getElementById("RocketAnim").style.display = "none";
+                
+
+
+                // Saat mau balikin ke gaya .btn-primary
+                if (x.split(" ")[1] == "1"){
+                    btn.style.background = "linear-gradient(145deg, #22c55e 40%, #16a34a 100%)"; // warna normal
+                    btn.style.cursor = "pointer"; // kursor tangan lagi
+                    btn.style.opacity = "1"; // full opacity
+                    btn.disabled = false; // aktifin lagi
+                    btn.style.background = "";
+
+                }
+                
+
+                
+            }
+            else{
+                multiplierEl.innerText = event.data+"x";
+                multiplierInfoEl.innerText = ""
+                if  (Isbet == true){
+                    btn.style.background = "linear-gradient(145deg, #22c55e 40%, #16a34a 100%)"; // gradient hijau misal
+                    document.getElementById('StartGameTxt').textContent = "Cash Out";
+                    document.getElementById("RocketAnim").style.display = "block";
+                } else{
+                    btn.style.background = "gray"; // warna abu-abu polos
+                    btn.style.cursor = "not-allowed"; // kursor tanda larangan
+                    btn.style.opacity = "0.6"; // lebih transparan dikit
+                    btn.disabled = true; // benar-benar disable tombol
+                }
+
+            }
+        };
+        
+
+        if (!token) {
+        startBtn.setAttribute('disabled', true);
+        startBtn.classList = "bg-gray-500 flex-1 text-white py-3 rounded-full text-lg font-semibold flex items-center justify-center space-x-2"
+
+        } else {
+        fetch("/dashboard", {
+            headers: {
+            "Authorization": "Bearer " + token
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            LoginBtn.remove()
+            console.log("Welcome,", data.Username);
+            console.log("Balance:", data.Balance);
+            balanceEl.textContent = "Rp"+data.Balance.toLocaleString("id-ID");
+            // Tampilkan ke UI atau simpan ke variabel global
+        })
+        .catch(err => {
+            console.error("Token error:", err);
+            localStorage.removeItem("jwt_token"); // hapus token kalau error
+            window.location.href = "/test/auto";
+        });
+        }
+
+    </script>
+</body>
+</html>
