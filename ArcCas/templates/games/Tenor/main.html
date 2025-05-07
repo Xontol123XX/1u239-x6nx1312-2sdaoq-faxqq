@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuvor || Spesmengs</title>
+    <style>
+        :root {
+            --primary: #0a192f;
+            --secondary: #172a45;
+            --accent: #64ffda;
+            --text: #e6f1ff;
+            --background: #020c1b;
+            --panel: #0a192f;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --highlight: #1e90ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--background));
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 10px;
+            gap: 10px;
+            max-width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .balance {
+            background-color: var(--panel);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: larger;
+            color: rgb(255, 255, 255);
+            transition: color 5,0;
+            display: flex;
+            justify-content: center;
+
+        }
+
+        .game-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Modified to display controls horizontally */
+        .controls-container {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .multiplier-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .multiplier-display {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            min-height: 150px;
+        }
+
+        .multiplier-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(30, 144, 255, 0.1) 0%, rgba(100, 255, 218, 0) 70%);
+            animation: pulse 4s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.3; }
+            100% { transform: scale(1.2); opacity: 0.1; }
+        }
+
+        .multiplier-text {
+            font-size: 10rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+            transition: color 0.3s, text-shadow 0.3s;
+            z-index: 1;
+            user-select: none;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: var(--panel);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .bet-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .amount-control {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .amount-input {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            border-radius: 5px;
+            padding: 10px 15px;
+            color: var(--text);
+            text-align: center;
+            font-size: 1.2rem;
+            transition: border 0.3s;
+        }
+
+        .amount-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .btn {
+            background-color: var(--secondary);
+            color: var(--text);
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background-color: var(--highlight);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 1.5rem;
+        }
+
+        .btn-lg {
+            padding: 15px;
+            font-size: 1.2rem;
+        }
+
+        .quick-bets {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+        }
+
+        .quick-bet {
+            flex: 1;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+        }
+
+        .auto-cashout {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 5px;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+
+        .auto-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .ControlSection {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) rgba(23, 42, 69, 0.2);
+        }
+
+        .history {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding: 10px 0;
+            white-space: nowrap;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) rgba(23, 42, 69, 0.2);
+
+        }
+
+        .history::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .history::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 5px;
+        }
+
+        .history::-webkit-scrollbar-thumb:hover {
+            background: var(--highlight);
+        }
+
+        .history-item {
+            min-width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(10, 25, 47, 0.6);
+            border-radius: 5px;
+            font-weight: bold;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            margin-left: 10px;
+            padding: 1% 1%;
+            user-select: none;
+        }
+
+        .history-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-color: rgba(100, 255, 218, 0.3);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            flex: 1;
+        }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(10, 25, 47, 0.9);
+            border-left: 4px solid var(--accent);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.3s ease-out;
+            max-width: 300px;
+            backdrop-filter: blur(5px);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-title svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.success .notification-title {
+            color: var(--success);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning);
+        }
+
+        .notification.warning .notification-title {
+            color: var(--warning);
+        }
+
+        .notification.danger {
+            border-left-color: var(--danger);
+        }
+
+        .notification.danger .notification-title {
+            color: var(--danger);
+        }
+
+        /* For mobile responsiveness */
+        @media (max-width: 768px) {
+            .controls {
+                margin-bottom: 40px !important; /* Atur sesuai kebutuhan */
+                
+            }
+            .controls-container {
+                flex-direction: column;
+            }
+            .history-item{
+                height: 50px;
+            }
+            
+            .multiplier-container {
+                flex: none;
+                height: 40vh;
+            }
+            
+            .multiplier-text {
+                font-size: 5rem;
+            }
+            
+            .ControlSection {
+                flex-direction: column;
+                overflow-x: hidden;
+                overflow-y: auto;
+                max-height: 40vh;
+            }
+            
+            .controls {
+                min-width: auto;
+            }
+            
+        }
+
+        /* Section titles */
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CRASH</h1>
+            
+        </div>
+
+        <div class="game-area">
+            <div class="multiplier-display">
+                <div class="multiplier-text" id="multiplier">Loading...</div>
+            </div>
+            <div class="balance" id="ProfilSection">Loading...</div>
+            <div class="history" id="history">
+                <!-- History items will be added here by JS -->
+            </div>
+
+            <div class="ControlSection">
+                <!-- Cashout Section (Left side) -->
+                <div class="controls hidden">
+                    <div class="section-title">CASHOUT</div>
+                    <div class="auto-cashout">
+                        <div class="auto-toggle">
+                            <span>Auto Cashout</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="amount-control" id="autoCashoutControl">
+                            <button class="btn btn-sm auto-decrease">-</button>
+                            <div class="input-wrapper">
+                                <input type="text" class="amount-input" value="2.00" id="autoCashout">
+                            </div>
+                            <button class="btn btn-sm auto-increase">+</button>
+                        </div>
+                    </div>
+
+                    <div class="auto-cashout">
+                        <div class="auto-toggle">
+                            <span>Auto Cashout 50%</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoHalfToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="amount-control" id="autoCashoutHalfControl">
+                            <button class="btn btn-sm auto-half-decrease">-</button>
+                            <div class="input-wrapper">
+                                <input type="text" class="amount-input" value="2.00" id="autoCashoutHalf">
+                            </div>
+                            <button class="btn btn-sm auto-half-increase">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bet Section (Right side) -->
+                <div class="controls">
+                    <div class="section-title">Start</div>
+                    
+                    <div class="bet-controls">
+                        <div class="amount-control">
+                            <div class="input-wrapper">
+                                <span class="currency-symbol">Rp</span>
+                                <input type="text" class="amount-input" value="1.000" id="betAmount">
+                            </div>
+                            
+                        </div>
+                        <div class="quick-bets">
+                            <button class="btn btn-sm quick-bet" data-amount="100">+100</button>
+                            <button class="btn btn-sm quick-bet" data-amount="500">+500</button>
+                            <button class="btn btn-sm quick-bet" data-amount="1000">+1.000</button>
+                            <button class="btn btn-sm quick-bet" data-amount="5000">+5.000</button>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons" style="margin-top: auto;">
+                        <button class="btn btn-lg btn-primary action-btn" id="betButton">Start</button>
+                    </div>
+                    <div class="action-buttons" style="margin-top: auto;">
+                        <button class="btn btn-lg btn-primary action-btn hidden" id="cashoutButton">
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <span style="font-size: 1.2em; font-weight: bold;" id="CashoutHeader">CASHOUT</span>
+                                <span style="font-size: 0.9em;" id="CashoutSimulation"></span>
+                            </div>
+                        </button>
+                        <button class="btn btn-lg btn-primary action-btn hidden" style="background-color: rgb(248, 150, 30);" id="cashoutHalfButton">
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <span style="font-size: 1.2em; font-weight: bold;" id="HalfCashoutHeader">Cashout 50%</span>
+                                <span style="font-size: 0.9em;" id="CashoutHalfSimulation"></span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification element -->
+    <div class="notification hidden" id="notification">
+        <div class="notification-title" id="notificationTitle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span id="notificationTitleText">Success</span>
+        </div>
+        <div id="notificationMessage">Your action was successful</div>
+    </div>
+
+    <script>
+
+        // ----------------------------------- UI SCRIPT --------------------------------------
+        // Formatting functions
+        function formatCurrency(value) {
+            let num = value.replace(/[^\d]/g, '');
+            if (!num) return '0';
+            num = parseInt(num, 10);
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        function formatDecimal(value) {
+            let num = value.replace(/[^\d.]/g, '');
+            const parts = num.split('.');
+            let whole = parts[0] || '0';
+            whole = whole.replace(/^0+/, '') || '0';
+            let decimal = parts[1] ? parts[1].substring(0, 2) : '00';
+            
+            if (parts[1] && parts[1].length > 2) {
+                decimal = Math.round(parseFloat('0.' + parts[1]) * 100).toString().padStart(2, '0');
+                if (decimal === '100') {
+                    whole = (parseInt(whole) + 1).toString();
+                    decimal = '00';
+                }
+            }
+            
+            return `${whole}.${decimal}`;
+        }
+
+
+        // Bet amount controls
+        const betAmountInput = document.getElementById('betAmount');
+
+        // Notification
+        const notification = document.getElementById('notification');
+        const titleElement = document.getElementById('notificationTitleText');
+        const messageElement = document.getElementById('notificationMessage');
+        const titleIcon = document.querySelector('#notificationTitle svg');
+
+        // Auto cashout controls
+        const autoCashoutInput = document.getElementById('autoCashout');
+        const autoDecrease = document.querySelector('.auto-decrease');
+        const autoIncrease = document.querySelector('.auto-increase');
+
+
+        // Auto cashout 50% controls
+        const autoCashoutHalfInput = document.getElementById('autoCashoutHalf');
+        const autoHalfDecrease = document.querySelector('.auto-half-decrease');
+        const autoHalfIncrease = document.querySelector('.auto-half-increase');
+        
+        // Toggle auto cashout controls
+        const autoHalfToggle = document.getElementById('autoHalfToggle');
+        const autoToggle = document.getElementById('autoToggle');
+        const autoCashoutHalfControl = document.getElementById('autoCashoutHalfControl');
+        const autoCashoutControl = document.getElementById('autoCashoutControl');
+
+        // Game state Declaration (UI only)
+        const betButton = document.getElementById('betButton');
+        const cashoutButton = document.getElementById('cashoutButton');
+        const CashoutSimulation = document.getElementById('CashoutSimulation');
+        const CashoutHalfSimulation = document.getElementById('CashoutHalfSimulation');
+        const cashoutHalfButton = document.getElementById('cashoutHalfButton');
+        const multiplierText = document.getElementById('multiplier');
+        if (window.innerWidth <= 768) {
+            document.getElementById('HalfCashoutHeader').style.fontSize = "0.6em"
+            document.getElementById('CashoutHeader').style.fontSize = "0.6em"
+            CashoutHalfSimulation.style.fontSize = "0.8em"
+            CashoutSimulation.style.fontSize = "0.8em"
+        }
+        if (window.innerWidth >= 768) {
+            CashoutHalfSimulation.style.fontSize = ""
+            CashoutSimulation.style.fontSize = ""
+            document.getElementById('HalfCashoutHeader').style.fontSize = ""
+            document.getElementById('CashoutHeader').style.fontSize = ""
+        }
+
+
+        // Notification functions
+        function showNotification(type, title, message, duration = 3000) {
+
+            
+            // Set notification content
+            titleElement.textContent = title;
+            messageElement.textContent = message;
+            
+            // Set notification type
+            notification.className = 'notification';
+            notification.classList.add(type);
+            
+            // Show notification
+            notification.classList.remove('hidden');
+            setTimeout(() => notification.classList.add('show'), 10);
+            
+            // Hide after duration
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.classList.add('hidden'), 300);
+            }, duration);
+        }
+
+        // UI Interaction Logic
+        document.addEventListener('DOMContentLoaded', function() {
+
+            
+            betAmountInput.addEventListener('input', (e) => {
+                const cursorPos = e.target.selectionStart;
+                const formatted = formatCurrency(e.target.value);
+                e.target.value = formatted;
+                const diff = formatted.length - e.target.value.length;
+                e.target.setSelectionRange(cursorPos + diff, cursorPos + diff);
+            });
+            
+
+            
+            // Quick bet buttons
+            document.querySelectorAll('.quick-bet').forEach(button => {
+                button.addEventListener('click', () => {
+                    const amount = parseInt(button.dataset.amount);
+                    let current = parseInt(betAmountInput.value.replace(/\./g, '')) || 0;
+                    betAmountInput.value = formatCurrency((current + amount).toString());
+                });
+            });
+            
+
+            
+            autoCashoutInput.addEventListener('input', (e) => {
+                const cursorPos = e.target.selectionStart;
+                const formatted = formatDecimal(e.target.value);
+                e.target.value = formatted;
+                const diff = formatted.length - e.target.value.length;
+                e.target.setSelectionRange(cursorPos + diff, cursorPos + diff);
+            });
+            
+
+            
+
+
+            autoCashoutHalfInput.addEventListener('input', (e) => {
+                const cursorPos = e.target.selectionStart;
+                const formatted = formatDecimal(e.target.value);
+                e.target.value = formatted;
+                const diff = formatted.length - e.target.value.length;
+                e.target.setSelectionRange(cursorPos + diff, cursorPos + diff);
+            });
+
+            autoDecrease.addEventListener('click', () => {
+                let value = parseFloat(autoCashoutInput.value) || 1.00;
+                value = Math.max(1.01, value - 1.00);
+                autoCashoutInput.value = value.toFixed(2);
+            });
+            
+            autoIncrease.addEventListener('click', () => {
+                let value = parseFloat(autoCashoutInput.value) || 1.00;
+                value += 1.00;
+                autoCashoutInput.value = value.toFixed(2);
+            });
+            
+            autoHalfDecrease.addEventListener('click', () => {
+                let value = parseFloat(autoCashoutHalfInput.value) || 1.00;
+                value = Math.max(1.01, value - 1.00);
+                autoCashoutHalfInput.value = value.toFixed(2);
+            });
+            
+            autoHalfIncrease.addEventListener('click', () => {
+                let value = parseFloat(autoCashoutHalfInput.value) || 1.00;
+                value += 1.00;
+                autoCashoutHalfInput.value = value.toFixed(2);
+            });
+            // Add to history
+            function addToHistory(multiplier) {
+                const history = document.getElementById('history');
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.textContent = parseFloat(multiplier).toFixed(2) + 'x';
+                
+                // Color based on multiplier
+                const multiplierValue = parseFloat(multiplier);
+                if (multiplierValue < 1.5) {
+                    item.style.color = '#f72585'; // Red for low multipliers
+                    item.style.borderColor = 'rgba(247, 37, 133, 0.3)';
+                    item.style.justifyContent = "center"
+                } else if (multiplierValue < 3) {
+                    item.style.color = '#f8961e'; // Orange for medium multipliers
+                    item.style.borderColor = 'rgba(248, 150, 30, 0.3)';
+                    item.style.justifyContent = "center"
+                } else {
+                    item.style.color = '#4cc9f0'; // Blue for high multipliers
+                    item.style.borderColor = 'rgba(76, 201, 240, 0.3)';
+                    item.style.justifyContent = "center"
+                }
+                
+                history.insertBefore(item, history.firstChild);
+                
+                // Limit history items
+                if (history.children.length > 20) {
+                    history.removeChild(history.lastChild);
+                }
+            }
+            
+
+
+            
+            
+            // Initialize inputs with proper formatting
+            betAmountInput.value = formatCurrency(betAmountInput.value);
+            autoCashoutInput.value = formatDecimal(autoCashoutInput.value);
+            autoCashoutHalfInput.value = formatDecimal(autoCashoutHalfInput.value);
+
+            // <------------------------------------------ BACK END ------------------------------------------>
+
+            // <-------------------------- Initialize -------------------------
+            const token = localStorage.getItem("jwt_token");
+            const AccountSection = document.getElementById('ProfilSection');
+            if (!token){
+                showNotification('danger', 'Login Faild', 'Please login to play');
+            }
+            else{
+                fetch("/dashboard", {
+                    headers: {
+                    "Authorization": "Bearer " + token
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Welcome,", data.Username);
+                    AccUsn = data.Username
+                    console.log("Balance:", data.Balance);
+                    AccountSection.textContent = `${data.Username} | Balance: Rp${data.Balance.toLocaleString("id-ID")}`
+                    // Tampilkan ke UI atau simpan ke variabel global
+                })
+                .catch(err => {
+                    console.error("Token error:", err);
+                    localStorage.removeItem("jwt_token"); // hapus token kalau error
+
+                });
+            }
+            fetch('/TenorLastMultiply')
+                .then(response => response.json())
+                .then(data => {
+                    MultiplyHistory = data
+                    console.log(data)
+                    MultiplyHistory.forEach(item => addToHistory(item.toFixed(2)));
+            });
+
+
+            // ------- WEB SOCKET DECLARATION ---------
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/game`;
+            const ws = new WebSocket(wsUrl);
+            const BetSfx = new Audio("/static/audio/Select1.mp3");
+            const CashoutSfx = new Audio("/static/audio/Select4.mp3");
+            const CrashSfx = new Audio("/static/audio/CrashSfx.mp3");
+            const TenorPlayingSong = new Audio("/static/audio/TenorSong.mp3");
+            TenorPlayingSong.loop = true
+
+
+            
+            // ---- Non WEB SOCKET Vaiable Declaration ----
+            let WaitingAnim = 0
+            let Isbet = false
+            let BetInformation
+            let AccUsn = ""
+            let cashoutHalf = false
+            let cashoutFull = false
+            let BetInfobetAmount = 0
+            let lastmultiplyUpd = false
+            let MultiplyHistory = [];
+
+            // ------ UPDATE MULTIPLAYER -----
+    ws.onmessage = function(event) {
+        // ---- STATUS SYSTEM ---
+        if (event.data.includes("Waiting")) {
+            
+            multiplierText.innerHTML = `NEXT ROUND IN <span style="color: orange;">${event.data.split(" ")[1]}s</span>`;
+            if (window.innerWidth <= 768) {
+                multiplierText.style.fontSize = "2.5rem"
+            }else{
+                multiplierText.style.fontSize = ""
+            }
+
+
+
+            if (event.data.includes("5")) {
+                multiplierText.style.transition = "color 5s";
+                multiplierText.style.color = "orange"
+                lastmultiplyUpd = false
+
+                if (Isbet == true){
+                    BetInfobetAmount = betAmountInput.value.replace(/\./g, '')
+                    // --- Play Tenor Fetch ---
+                    const response = fetch('/play/tenor', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ 
+                                bet: parseInt(betAmountInput.value.replace(/\./g, '')) || 0,
+
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.Status.includes("Success")){
+                                Isbet = true
+                                BetSfx.play()
+                                betButton.classList.add('hidden');
+                                cashoutButton.classList.remove('hidden');
+                                cashoutHalfButton.classList.remove('hidden');
+                                let x = parseInt(betAmountInput.value.replace(/\./g, '')) || 0.
+                                showNotification('success', 'Bet accepted', `You bet at Rp${x.toLocaleString("id-ID")}`);
+
+                                AccountSection.textContent  = `${AccUsn} | Balance: Rp${data.Balance.toLocaleString("id-ID")}`
+                                AccountSection.style.color =  "orange"
+                            }
+                            else{
+                                showError(data)
+
+                            }
+                            
+                        })
+                    }
+                
+                }
+            if (event.data.includes('1')){
+                CashoutSimulation.textContent.textContent = ""
+                CashoutHalfSimulation.textContent.textContent = ""
+                cashoutHalf = false
+                cashoutFull = false
+                multiplierText.style.color = "white"
+                AccountSection.style.color =  "white"
+                betButton.style.background = ""; // kosongkan, biar balik ke CSS
+                betButton.style.cursor = "";
+                betButton.style.opacity = "";
+                betButton.disabled = false; // aktifkan tombol
+
+                cashoutButton.style.background = ""; // warna abu-abu polos
+                cashoutButton.style.cursor = ""; // kursor tanda larangan
+                cashoutButton.style.opacity = ""; // lebih transparan dikit
+                cashoutButton.disabled = false; // benar-benar disable tombol
+                
+                cashoutHalfButton.style.background = "orange";
+                cashoutHalfButton.style.cursor = ""; // kursor tanda larangan
+                cashoutHalfButton.style.opacity = ""; // lebih transparan dikit
+                cashoutHalfButton.disabled = false; // benar-benar disable tombol
+                console.log()
+                
+
+            }
+        }
+
+        if (event.data.includes("x")) {
+            CrashSfx.play()
+            TenorPlayingSong.pause()
+            TenorPlayingSong.currentTime = 0;
+            multiplierText.style.transition = "color 0s";
+            console.log("Crash")
+            MultiplyHistory.push(event.data.replace("x"))
+            addToHistory(event.data.replace("x"))
+            Isbet = false
+            betButton.textContent = "Start"
+            multiplierText.textContent = event.data
+            multiplierText.style.color = "red"
+            betButton.style.background = "gray"; // warna abu-abu polos
+            betButton.style.cursor = "not-allowed"; // kursor tanda larangan
+            betButton.style.opacity = "0.6"; // lebih transparan dikit
+            betButton.disabled = true; // benar-benar disable tombol
+            betButton.classList.remove('hidden');
+            cashoutButton.classList.add('hidden');
+
+
+            cashoutHalfButton.classList.add('hidden');
+            
+        }
+        else if (!event.data.includes("Waiting")){
+            TenorPlayingSong.play()
+            multiplierText.textContent = event.data+"x"
+            betButton.style.background = "gray"; // warna abu-abu polos
+            betButton.style.cursor = "not-allowed"; // kursor tanda larangan
+            betButton.style.opacity = "0.6"; // lebih transparan dikit
+            betButton.disabled = true; // benar-benar disable tombol
+            
+
+            multiplierText.style.fontSize = ""
+            console.log(cashoutFull)
+            if (cashoutHalf == true && cashoutFull == false) {
+                CashoutSimulation.textContent = `Rp${parseInt(parseFloat(event.data/2) * parseFloat(BetInfobetAmount)).toLocaleString("id-ID")}`;
+            }
+            else if (cashoutFull == false){
+                CashoutSimulation.textContent = `Rp${parseInt(parseFloat(event.data) * parseFloat(BetInfobetAmount)).toLocaleString("id-ID")}`;
+            }
+            if (cashoutHalf == false){
+                CashoutHalfSimulation.textContent = `Rp${parseInt(parseFloat(event.data/2) * parseFloat(BetInfobetAmount)).toLocaleString("id-ID")}`;
+            }
+            
+        }
+    }
+        
+
+
+            // --------------------------------------- PLAYING SYSTEM ---------------------------------
+            betButton.addEventListener('click', () => { // If Bet Btn Clicked
+                const betAmount = parseInt(betAmountInput.value.replace(/\./g, '')) || 0;
+                console.log(betAmount)
+                // ---- Playing Logic ----
+                const autoCashoutEnabled = autoToggle.checked;
+                const autoCashoutHalfEnabled = autoHalfToggle.checked;
+                if (Isbet == true){
+                    Isbet = false
+                    betButton.textContent = "Start"
+                    betButton.style.background = ""
+                } else{
+                    Isbet = true
+                    betButton.textContent = "Cancel"
+                    betButton.style.background = "red";
+                }
+            });
+
+            cashoutButton.addEventListener('click', () => {
+                console.log("CASHOUT!")
+                const response = fetch('/cashout/tenor', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        //body: JSON.stringify({ bet: betAmountEl.value })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.Status.includes("Success")){
+                            console.log("Succes")
+                            CashoutSfx.play()
+                            console.log(data)
+
+                            // Show notification
+                            notification.classList.remove('show');
+                            showNotification('warning', `You Cashout at ${data.currentMultiply}`, `You Got Rp${data.Winnings.toLocaleString("id-ID")}`, duration=8000);
+                            AccountSection.textContent = `${AccUsn} | Balance: Rp${data.Balance.toLocaleString("id-ID")}`
+                            AccountSection.style.color =  "rgb(76, 201, 240)"
+                            cashoutHalf = true
+                            cashoutFull = true
+                            cashoutHalfButton.style.background = "gray"; // warna abu-abu polos
+                            cashoutHalfButton.style.cursor = "not-allowed"; // kursor tanda larangan
+                            cashoutHalfButton.style.opacity = "0.6"; // lebih transparan dikit
+                            cashoutHalfButton.disabled = true; // benar-benar disable tombol
+
+                            cashoutButton.style.background = "gray"; // warna abu-abu polos
+                            cashoutButton.style.cursor = "not-allowed"; // kursor tanda larangan
+                            cashoutButton.style.opacity = "0.6"; // lebih transparan dikit
+                            cashoutButton.disabled = true; // benar-benar disable tombol
+
+                            CashoutSimulation.textContent = `Rp${data.Winnings.toLocaleString("id-ID")}`;
+                        }
+                        else{
+                            showNotification("danger", "Something went wrong", data.Msg)
+                        }
+                    })
+                    .catch(err => {
+                        showNotification("danger", "Something went wrong", err)
+                            
+
+                    });
+            });
+            
+            cashoutHalfButton.addEventListener('click', () => {
+                cashoutHalf = true
+                const response = fetch('/halfcashout/tenor', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        //body: JSON.stringify({ bet: betAmountEl.value })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.Status.includes("Success")){
+                            console.log("Succes")
+                            console.log(data)
+                            // Show notification
+                            showNotification('warning', `You Cashout at ${data.currentMultiply}`, `You Got Rp${data.Winnings.toLocaleString("id-ID")}`);
+                            AccountSection.textContent = `${AccUsn} | Balance: Rp${data.Balance.toLocaleString("id-ID")}`
+                            AccountSection.style.color =  "rgb(76, 201, 240)"
+
+                            cashoutHalfButton.style.background = "gray"; // warna abu-abu polos
+                            cashoutHalfButton.style.cursor = "not-allowed"; // kursor tanda larangan
+                            cashoutHalfButton.style.opacity = "0.6"; // lebih transparan dikit
+                            cashoutHalfButton.disabled = true; // benar-benar disable tombol
+                            CashoutHalfSimulation.textContent = `Rp${data.Winnings}`;
+                        }
+                        else{
+                            showNotification("danger", "Something went wrong", data.Msg)
+                        }
+                    })
+                    .catch(err => {
+                        showNotification("danger", "Something went wrong", err)
+                    });
+            });
+        });
+    </script>
+</body>
+</html>

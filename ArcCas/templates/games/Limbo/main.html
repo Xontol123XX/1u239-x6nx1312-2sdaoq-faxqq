@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limbo Casino</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #141c2e;
+            --secondary: #0f1623;
+            --accent: #26de81;
+            --accent-glow: rgba(38, 222, 129, 0.15);
+            --text: #f1f2f6;
+            --dark-text: #a4b0be;
+            --card-bg: #1a2333;
+            --header-bg: #0f1623;
+            --button-bg: #26de81;
+            --button-hover: #20ba68;
+            --gradient-start: #26de81;
+            --gradient-end: #1e9c5b;
+            --danger: #ff6b6b;
+            
+        }
+        
+        body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+
+        body {
+            background-color: var(--primary);
+            color: var(--text);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(38, 222, 129, 0.05) 0%, transparent 30%),
+                radial-gradient(circle at 90% 90%, rgba(38, 222, 129, 0.05) 0%, transparent 30%);
+        }
+
+        header {
+            background-color: var(--header-bg);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(38, 222, 129, 0.2);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            text-shadow: 0 0 10px rgba(38, 222, 129, 0.5);
+        }
+
+        .logo svg {
+            margin-right: 0.5rem;
+            filter: drop-shadow(0 0 5px rgba(38, 222, 129, 0.5));
+        }
+
+        .balance {
+            background-color: var(--card-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            border: 1px solid rgba(38, 222, 129, 0.2);
+            box-shadow: 0 0 15px rgba(38, 222, 129, 0.1);
+        }
+
+        .balance-amount {
+            color: var(--accent);
+            margin-left: 0.5rem;
+            text-shadow: 0 0 5px rgba(38, 222, 129, 0.3);
+        }
+
+        main {
+            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background-image: 
+                linear-gradient(135deg, rgba(38, 222, 129, 0.03) 0%, transparent 100%);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .game-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .game-title:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 24px;
+            background: linear-gradient(to bottom, var(--gradient-start), var(--gradient-end));
+            border-radius: 3px;
+        }
+
+        .limbo-game {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .multiplier-display {
+            font-size: 4rem;
+            font-weight: bold;
+            text-align: center;
+            color: var(--accent);
+            padding: 3rem 2rem;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 0 10px rgba(38, 222, 129, 0.7);
+            border: 1px solid rgba(38, 222, 129, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .multiplier-display:after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(38, 222, 129, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .multiplier-display.active:after {
+            opacity: 1;
+        }
+
+        .game-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-title {
+            color: var(--dark-text);
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            display: flex;
+            background-color: var(--secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .input-group input {
+            flex: 1;
+            background-color: transparent;
+            border: none;
+            color: var(--text);
+            padding: 0.8rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        /* Remove spinner buttons for Chrome, Safari, Edge, Opera */
+        .input-group input::-webkit-outer-spin-button,
+        .input-group input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .input-group input:focus {
+            outline: none;
+        }
+
+        .input-group button {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: none;
+            color: var(--dark-text);
+            padding: 0 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .input-group button:hover {
+            color: var(--text);
+            background-color: rgba(38, 222, 129, 0.1);
+        }
+
+        .bet-button {
+            grid-column: 1 / span 2;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: #121212;
+            border: none;
+            padding: 1.2rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(38, 222, 129, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .bet-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(38, 222, 129, 0.4);
+        }
+        
+        .bet-button:active {
+            transform: translateY(1px);
+        }
+
+        .history-container {
+            margin-top: 0rem;
+        }
+
+        .history-title {
+            color: var(--dark-text);
+            font-weight: 500;
+
+        }
+
+        .history-scroll {
+            position: relative;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding: 0.5rem 0;
+            background-color: #141c2e;
+            border-color: #000000;
+            border-radius: 10px;
+        }
+        .history-scroll::-webkit-scrollbar {
+            height: 5px; /* Tinggi scrollbar horizontal */
+        }
+
+        .history-scroll::-webkit-scrollbar-track {
+            background: #6b6b6b; /* Warna latar belakang track */
+            border-radius: 5px;
+        }
+
+        .history-scroll::-webkit-scrollbar-thumb {
+            background: #ffffff; /* Warna thumb (bagian yang digeser) */
+            border-radius: 5px;
+        }
+
+        .history-scroll::-webkit-scrollbar-thumb:hover {
+            background: #ffffff; /* Warna saat hover */
+        }
+
+
+        .history-list {
+            display: flex;
+            gap: 0.8rem;
+
+        }
+
+        .history-item {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .win {
+            color: var(--accent);
+            border-color: rgba(38, 222, 129, 0.2);
+            box-shadow: 0 0 10px rgba(38, 222, 129, 0.1);
+        }
+
+        .lose {
+            color: var(--danger);
+            border-color: rgba(255, 107, 107, 0.2);
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.1);
+        }
+
+
+
+        @media (max-width: 768px) {
+            .game-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .bet-button {
+                grid-column: 1;
+            }
+            
+            .multiplier-display {
+                font-size: 7rem;
+                padding: 2rem;
+            }
+            
+            .game-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+      <style>
+        .checkbox-wrapper-51 input[type="checkbox"] {
+          visibility: hidden;
+          display: none;
+        }
+      
+        .checkbox-wrapper-51 .toggle {
+          position: relative;
+          display: block;
+          width: 42px;
+          height: 24px;
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+          transform: translate3d(0, 0, 0);
+        }
+        .checkbox-wrapper-51 .toggle:before {
+          content: "";
+          position: relative;
+          top: 1px;
+          left: 1px;
+          width: 40px;
+          height: 22px;
+          display: block;
+          background: #c8ccd4;
+          border-radius: 12px;
+          transition: background 0.2s ease;
+        }
+        .checkbox-wrapper-51 .toggle span {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 24px;
+          height: 24px;
+          display: block;
+          background: #fff;
+          border-radius: 50%;
+          box-shadow: 0 2px 6px rgba(154,153,153,0.75);
+          transition: all 0.2s ease;
+        }
+        .checkbox-wrapper-51 .toggle span svg {
+          margin: 7px;
+          fill: none;
+        }
+        .checkbox-wrapper-51 .toggle span svg path {
+          stroke: #c8ccd4;
+          stroke-width: 2;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          stroke-dasharray: 24;
+          stroke-dashoffset: 0;
+          transition: all 0.5s linear;
+        }
+        .checkbox-wrapper-51 input[type="checkbox"]:checked + .toggle:before {
+          background: #52d66b;
+        }
+        .checkbox-wrapper-51 input[type="checkbox"]:checked + .toggle span {
+          transform: translateX(18px);
+        }
+        .checkbox-wrapper-51 input[type="checkbox"]:checked + .toggle span path {
+          stroke: #52d66b;
+          stroke-dasharray: 25;
+          stroke-dashoffset: 25;
+        }
+      </style>
+      
+</head>
+<body>
+
+    <main>
+        <div class="game-container">
+            <div class="game-header">
+                <div class="game-title">Limbo</div>
+                <div class="balance">
+                    <span>Balance:</span>
+                    <span class="balance-amount">$1,000.00</span>
+                </div>
+            </div>
+            
+            
+            <div class="limbo-game">
+                <div class="multiplier-display" id="multiplier">1.00x</div>
+                
+                <div class="game-controls">
+                    <div class="control-group">
+                        <div class="control-title">BET AMOUNT</div>
+                        <div class="input-group">
+                            <input type="number" id="betAmount" value="10.00" inputmode="numeric" lang="en-US">
+                            <button id="halfBet">1/2</button>
+                            <button id="doubleBet">2x</button>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="control-group">
+                        <div class="control-title">TARGET MULTIPLIER</div>
+                        <div class="input-group">
+                            <input type="number" id="targetMultiplier" value="2.00">
+                            <button id="decreaseTarget">-</button>
+                            <button id="increaseTarget">+</button>
+
+                        </div>
+                        <div class="control-group" style="display: flex; margin-top: 20px;">
+
+                            <div class="checkbox-wrapper-51">
+                                <input type="checkbox" id="cbx-51" />
+                                <label for="cbx-51" class="toggle">
+                                  <span>
+                                    <svg width="10px" height="10px" viewBox="0 0 10 10">
+                                      <path d="M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z"></path>
+                                    </svg>
+                                  </span>
+                                </label>
+                            </div>
+                            <p style="margin-left: 10px;">Auto Play</p>
+    
+                        </div>
+                    </div>
+
+                    <button class="bet-button" id="playButton">BET</button>
+                </div>
+                
+                
+                <div class="history-container">
+                    <div class="history-title">HISTORY</div>
+                    <div class="history-scroll">
+                        <div class="history-list" id="historyList">
+                            <div class="history-item win">2.54x</div>
+                            <div class="history-item lose">1.32x</div>
+                            <div class="history-item win">5.21x</div>
+                            <div class="history-item win">3.45x</div>
+                            <div class="history-item lose">1.05x</div>
+                            <div class="history-item win">4.28x</div>
+                            <div class="history-item win">6.12x</div>
+                            <div class="history-item lose">1.42x</div>
+                            <div class="history-item win">2.87x</div>
+                            <div class="history-item lose">1.21x</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elements
+            const multiplierDisplay = document.getElementById('multiplier');
+            const betAmountInput = document.getElementById('betAmount');
+            const targetMultiplierInput = document.getElementById('targetMultiplier');
+            const halfBetButton = document.getElementById('halfBet');
+            const doubleBetButton = document.getElementById('doubleBet');
+            const decreaseTargetButton = document.getElementById('decreaseTarget');
+            const increaseTargetButton = document.getElementById('increaseTarget');
+            const playButton = document.getElementById('playButton');
+            const historyList = document.getElementById('historyList');
+            const balanceDisplay = document.querySelector('.balance-amount');
+            const token = localStorage.getItem("jwt_token");
+            const AccountSection = document.getElementById('ProfilSection');
+            if (!token){
+                console.log("Login Eror")
+            }
+            else{
+                fetch("/dashboard", {
+                    headers: {
+                    "Authorization": "Bearer " + token
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Welcome,", data.Username);
+                    AccUsn = data.Username
+                    console.log("Balance:", data.Balance);
+                    
+                    // Tampilkan ke UI atau simpan ke variabel global
+                })
+                .catch(err => {
+                    console.error("Token error:", err);
+                    localStorage.removeItem("jwt_token"); // hapus token kalau error
+
+                });
+            }
+
+                
+
+
+            // Game state
+            let balance = 1000.00;
+            let isPlaying = false;
+            let gameInterval;
+            const maxHistory = 20;
+
+            // Format currency
+            const formatCurrency = (amount) => {
+                return '$' + parseFloat(amount).toFixed(2);
+            };
+
+            // Format multiplier
+            const formatMultiplier = (value) => {
+                return parseFloat(value).toFixed(2) + 'x';
+            };
+
+            // Update balance display
+            const updateBalance = (bal) => {
+                balanceDisplay.textContent = formatCurrency(balance);
+            };
+
+            // Add to history
+            const addToHistory = (multiplier, win) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = `history-item ${win ? 'win' : 'lose'}`;
+                historyItem.textContent = formatMultiplier(multiplier);
+                
+                // Add to beginning of list
+                historyList.prepend(historyItem);
+                
+                // Limit history items
+                while (historyList.children.length > maxHistory) {
+                    historyList.removeChild(historyList.lastChild);
+                }
+
+                // Scroll to start
+                historyList.scrollLeft = 0;
+            };
+
+            // Generate random multiplier (using cryptographic randomness for fairness)
+            const generateMultiplier = () => {
+                // This uses a house edge of approximately 4%
+                // Generates values from 1.00 to potentially very high numbers
+                // The distribution follows a pattern similar to real gambling games
+                const rand = crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296;
+                return 1 / (1 - (0.96 * rand));
+            };
+
+            // Start the game
+            const startGame = () => {
+                if (isPlaying) return;
+                
+                const betAmount = parseFloat(betAmountInput.value);
+                const targetMultiplier = parseFloat(targetMultiplierInput.value);
+                
+                // Validation
+                if (isNaN(betAmount) || betAmount <= 0) {
+                    alert('Please enter a valid bet amount');
+                    return;
+                }
+                
+                if (isNaN(targetMultiplier) || targetMultiplier <= 1) {
+                    alert('Target multiplier must be greater than 1.00');
+                    return;
+                }
+                
+                if (betAmount > balance) {
+                    alert('Insufficient balance');
+                    return;
+                }
+
+                // Change button state
+                playButton.textContent = 'RUNNING...';
+                playButton.disabled = true;
+                isPlaying = true;
+
+                // Generate the final multiplier (determined instantly but revealed gradually)
+                const finalMultiplier = generateMultiplier();
+                
+                // Start from 1.00x and count up
+                let currentMultiplier = 1.00;
+                const startTime = Date.now();
+                let animationSpeed = 0.1; // Initial speed
+                
+                // Update the display at varying speeds
+                gameInterval = setInterval(() => {
+                    // Increase speed as the multiplier grows
+                    animationSpeed = Math.min(2.0, 0.01 + (currentMultiplier - 1) * 0.5);
+                    
+                    // Update current multiplier
+                    currentMultiplier += animationSpeed;
+                    multiplierDisplay.textContent = formatMultiplier(currentMultiplier);
+                    
+                    // Check if we've reached the final multiplier or the target multiplier
+                    if (currentMultiplier >= finalMultiplier || currentMultiplier >= targetMultiplier) {
+                        clearInterval(gameInterval);
+                        
+                        // Determine if player won
+                        const win = currentMultiplier >= targetMultiplier;
+                        
+                        // Set final display
+                        if (win) {
+                            const winAmount = betAmount * targetMultiplier;
+                            balance += winAmount;
+                            multiplierDisplay.textContent = formatMultiplier(targetMultiplier);
+                            multiplierDisplay.style.color = ""
+                            multiplierDisplay.style.textShadow = ""
+                            addToHistory(targetMultiplier, true);
+                        } else {
+                            multiplierDisplay.textContent = formatMultiplier(finalMultiplier);
+                            multiplierDisplay.style.color = "red"
+                            multiplierDisplay.style.textShadow = "0 0 10px #ff6b6b"
+                            addToHistory(finalMultiplier, false);
+                        }
+                        
+
+                        setTimeout(() => {
+                            playButton.textContent = 'BET';
+                            playButton.disabled = false;
+                            isPlaying = false;
+                            multiplierDisplay.classList.remove('active');
+                        }, 500);
+                        setTimeout(() =>{
+                            multiplierDisplay.style.color = ""
+                            multiplierDisplay.style.textShadow = ""
+                        }, 500)
+                    }
+                }, 50);
+            };
+
+            // Event listeners
+            halfBetButton.addEventListener('click', () => {
+                if (isPlaying) return;
+                const currentBet = parseFloat(betAmountInput.value);
+                betAmountInput.value = (currentBet / 2).toFixed(2);
+            });
+
+            doubleBetButton.addEventListener('click', () => {
+                if (isPlaying) return;
+                const currentBet = parseFloat(betAmountInput.value);
+                const newBet = (currentBet * 2).toFixed(2);
+                if (newBet <= balance) {
+                    betAmountInput.value = newBet;
+                } else {
+                    betAmountInput.value = balance.toFixed(2);
+                }
+            });
+
+            decreaseTargetButton.addEventListener('click', () => {
+                if (isPlaying) return;
+                const currentTarget = parseFloat(targetMultiplierInput.value);
+                const newTarget = Math.max(1.01, (currentTarget - 0.25).toFixed(2));
+                targetMultiplierInput.value = newTarget;
+            });
+
+            increaseTargetButton.addEventListener('click', () => {
+                if (isPlaying) return;
+                const currentTarget = parseFloat(targetMultiplierInput.value);
+                targetMultiplierInput.value = (currentTarget + 0.25).toFixed(2);
+            });
+
+            playButton.addEventListener('click', startGame);
+
+            // Input validation
+            betAmountInput.addEventListener('input', () => {
+                let value = parseFloat(betAmountInput.value);
+                if (!isNaN(value)) {
+                    if (value > balance) {
+                        betAmountInput.value = balance.toFixed(2);
+                    }
+                }
+            });
+
+            targetMultiplierInput.addEventListener('input', () => {
+                let value = parseFloat(targetMultiplierInput.value);
+                if (!isNaN(value)) {
+                    if (value < 1.01) {
+                        targetMultiplierInput.value = '1.01';
+                    }
+                    if (value >= 1000) {
+                        targetMultiplierInput.value = '1000';
+                    }
+                }
+            });
+
+            // Initial setup
+            updateBalance();
+            
+            // Clear dummy history and create fresh history list
+            historyList.innerHTML = '';
+            
+            // Add random starting history
+            for (let i = 0; i < 10; i++) {
+                const randomMultiplier = generateMultiplier();
+                const win = Math.random() > 0.5;
+                addToHistory(win ? randomMultiplier : Math.min(randomMultiplier, 1.99), win);
+            }
+        });
+    </script>
+</body>
+</html>
